@@ -1,8 +1,0 @@
-library(dplyr)
-library(tidyverse)
-library(esquisse)
-library(kableExtra)
-library(patchwork)
-library(gridExtra)
-library(ggplot2)
-salary<-read.csv("Salary.csv",header = TRUE)
