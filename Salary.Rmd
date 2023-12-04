@@ -1,0 +1,98 @@
+---
+title: "Salary"
+author: "Chenghao Xia"
+date: "2023-11-29"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#| label: Load libraries
+#| warning: false
+#| message: false
+#| echo: false
+library(dplyr)
+library(tidyverse)
+library(esquisse)
+library(kableExtra)
+library(patchwork)
+library(gridExtra)
+library(ggplot2)
+library(lme4)
+library(summarytools)
+library(caTools)
+```
+
+# Introduction
+
+Here we have a data set talking about the salary information from various variables. It includes details on job titles, salaries, job sectors, geographic locations, and more.
+
+```{r}
+#| echo: false
+salary<-read.csv("Salary.csv",header = TRUE)
+```
+
+# Data
+
+## Null value
+
+First, we want to see if there is any null value. And luckily, there is no missing value in the data set which means the model will not fail because of missing data
+
+```{r}
+#| echo: false
+colSums(is.na(salary))
+```
+
+## Data Reading
+
+We have a total of 9 variables, and 5 of them are numeric, while other 4 are categorical. For the 4 categorical variables, 'Gender' has only two outcome which are obviously Male and Female; 'Job Title' has a total of 129 different type of title; 'Country' has five different outcome which are UK, USA, Canada, China, Australia;'Race' has a total of 10 races which are White, Hispanic, Asian, Korean, Chinese, Australian, Welsh, African American, Mixed, Black.
+
+And for the five numeric variable, 'Age' has a range from 21 to 62; 'Education level' has four outcome with 0 1 2 3, while 0 means high school, 1 means Bachelor Degree, 2 means Master Degree, 3 means PhD; 'Years of Experience' has a range from 0 to 34; 'Salary' has a range from 350 to 250000 with US dollar; 'Senior' has a binary outcome with 0 and 1 which shows that if this employee has a senior position or no.
+
+```{r}
+#| echo: false
+summary(salary)
+sapply(salary, function(x) length(unique(x)))
+```
+# Data Cleaning
+```{r}
+#| echo: false
+salary$Gender_Male <- ifelse(salary$Gender == "Male", 1, 0)
+```
+
+```{r}
+#| echo: false
+X <- salary[, c("Years.of.Experience", "Age")]
+y <- salary$Salary
+
+set.seed(317)
+split <- sample.split(y, SplitRatio = 0.8)
+train_x <- subset(X, split == TRUE)
+test_x <- subset(X, split == FALSE)
+train_y <- y[split == TRUE]
+test_y <- y[split == FALSE]
+
+cat("Train X shape:", dim(train_x), "\n")
+cat("Test X shape:", dim(test_x), "\n")
+cat("Train y length:", length(train_y), "\n")
+cat("Test y length:", length(test_y), "\n")
+
+mlr_model <- lm(train_y ~ Years.of.Experience + Age, data = data.frame(train_x, train_y))
+
+cat("Test Error:", summary(mlr_model)$r.squared, "\n")
+cat("Train Error:", summary(mlr_model)$r.squared, "\n")
+
+cat("Intercept:", coef(mlr_model)[1], "\n")
+cat("Coefficients:", coef(mlr_model), "\n")
+
+```
+```{r}
+mlm_model <- lmer(Salary ~ Years.of.Experience + Age + (1 | Senior), data = salary)
+summary(mlm_model)
+
+```
+
+
