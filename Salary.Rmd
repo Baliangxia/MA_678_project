@@ -1,7 +1,7 @@
 ---
 title: "Salary"
 author: "Chenghao Xia"
-date: "2023-11-29"
+date: "2023-12-12"
 output:
   pdf_document: default
 ---
@@ -27,6 +27,7 @@ library(summarytools)
 library(caTools)
 library(car)
 library(lattice)
+library(gtable)
 ```
 
 # Abstract
@@ -62,34 +63,40 @@ salary$Race <- as.factor(salary$Race)
 
 ## Exploratory Data Analysis
 
-EDA is generally used to see whether there are correlation between variables and Salary. Boxplot and ANOVA would be working to see if factors are highly correlated for categorical variables. Heatmap and Vif function would be working to see if factors are highly correlated for numerical variables. All factors which are correlated to salary will be counted as a factor in the model. Also, whether there is correlation between these variables are also analyzed to see if there are interactive effects for those variables. \## Multilevel Linear Model Two models are being fitted, one contains the interactive effect and the other doesn't. For both models, the assumptions of the multilevel model are checked whether the model fits the requirement. For each multilevel model, the linearity, normality assumption, and homogeneity of variance are being checked using the model. \# Result \## Visualization \### cateforical variables
+EDA is generally used to see whether there are correlation between variables and Salary. Boxplot and ANOVA would be working to see if factors are highly correlated for categorical variables. Heatmap and Vif function would be working to see if factors are highly correlated for numerical variables. All factors which are correlated to salary will be counted as a factor in the model. Also, whether there is correlation between these variables are also analyzed to see if there are interactive effects for those variables. 
+
+## Multilevel Linear Model 
+
+Two models are being fitted, one contains the interactive effect and the other doesn't. For both models, the assumptions of the multilevel model are checked whether the model fits the requirement. For each multilevel model, the linearity, normality assumption, and homogeneity of variance are being checked using the model. 
+
+# Result 
+
+## Visualization 
+
+### cateforical variables
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
-# Boxplot for different countries
 gender_box<-ggplot(salary) +
   aes(x = Gender, y = Salary) +
   geom_boxplot(fill = "lightblue") +
-  labs(title = "Boxplot for Salary compared by Gender",
-       caption = "Figure 1") +
+  labs(title = "Boxplot for Salary compared by Gender") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5),
         plot.caption = element_text(hjust = 0.5))
 country_box<-ggplot(salary) +
   aes(x = Country, y = Salary) +
   geom_boxplot(fill = "lightblue") +
-  labs(title = "Boxplot for Salary compared by Country",
-       caption = "Figure 2") +
+  labs(title = "Boxplot for Salary compared by Country") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5),
         plot.caption = element_text(hjust = 0.5))
 race_box<-ggplot(salary) +
   aes(x = Race, y = Salary) +
   geom_boxplot(fill = "lightblue") +
-  labs(title = "Boxplot for Salary compared by Race",
-       caption = "Figure 3") +
+  labs(title = "Boxplot for Salary compared by Race") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5),
         plot.caption = element_text(hjust = 0.5),
@@ -98,20 +105,16 @@ race_box<-ggplot(salary) +
 
 ```{r}
 #| echo: false
-print(gender_box)
+gender_box
 ```
 
 ```{r}
 #| echo: false
-print(country_box)
+grid.arrange(race_box,country_box,nrow=2)
 ```
 
-```{r}
-#| echo: false
-print(race_box)
-```
 
-Figure 1,2 and 3 show the distribution of the salary given different factors. For gender, we can see there is a clear difference between Male and Female whether in 25% value, median, 75% value, or max value, which shows that gender is an important factor for salary. And for ANOVA analysis, the p-value is small which indicates that there are significant differences in salary across Gender. For Country and Race, it seems like we can not see a significant difference in salary across Country and Race. And in order to check by ANOVA and it gives us a high p-value which proves that there are not significant difference in salary across Country and Race. For job Title, since we have 129 different job titles, so boxplot can not work well here so we just use ANOVA to check the correlation. The p-value is small enough to say that there are significant differences in salary across Job Title. 
+Figures above show the distribution of the salary given different factors. For gender, we can see there is a clear difference between Male and Female whether in 25% value, median, 75% value, or max value, which shows that gender is an important factor for salary. And for ANOVA analysis, the p-value is small which indicates that there are significant differences in salary across Gender. For Country and Race, it seems like we can not see a significant difference in salary across Country and Race. And in order to check by ANOVA and it gives us a high p-value which proves that there are not significant difference in salary across Country and Race. For job Title, since we have 129 different job titles, so boxplot can not work well here so we just use ANOVA to check the correlation. The p-value is small enough to say that there are significant differences in salary across Job Title. 
 
 ### numerical variables
 
@@ -147,20 +150,15 @@ Then we are going to check for the collinearity. Years.of.Experience and Age hav
 
 The model includes Age, Year of experience, and the random effects grouped by Gender and Job Title. And we normalize the salary by log(salary).
 
-```{r}
+```{r, fig.height=4, out.height='50%'}
 #| warning: false
 #| message: false
 #| echo: false
 model1 <- lmer(log(Salary) ~Age + Years.of.Experience + (1 | Gender) + (1 | Job.Title), data = salary)
 plot(resid(model1))
-```
-
-```{r}
-#| warning: false
-#| message: false
-#| echo: false
 qqmath(model1)
 ```
+
 
 In these two figures, it show the residual plot and the qq plot which generally confirm the linearity and normality of the model. Although there are some outliers that away from 0, most of the residuals are randomly distributed around 0.
 
@@ -169,18 +167,12 @@ In these two figures, it show the residual plot and the qq plot which generally 
 The model includes Age, Year of experience, the interaction effect between Age and Year of experience, and the random effects grouped by Gender and Job Title.And we normalize the salary by 
 log(salary).
 
-```{r}
+```{r,fig.height=4, out.height='50%'}
 #| warning: false
 #| message: false
 #| echo: false
 model2 <- lmer(log(Salary) ~Age + Years.of.Experience + Age*Years.of.Experience + (1 | Gender) + (1 | Job.Title), data = salary)
 plot(resid(model2))
-```
-
-```{r}
-#| warning: false
-#| message: false
-#| echo: false
 qqmath(model2)
 ```
 In Figure above, the residual plot and the qq plot which generally confirm the linearity and normality of the model.The model helps to improve the homogeneity of variability as the points are more normality distributed in the residual and qq plot.
