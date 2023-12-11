@@ -32,7 +32,7 @@ library(gtable)
 
 # Abstract
 
-This study examines a large data collection that includes salary information for individuals with a variety of demographic and professional characteristics. The data set includes four categorical factors (gender, job title, nation, and race) and five numeric variables (age, education level, years of experience, salary, and senior status). Notably, job titles cover 129 different occupations, gender displays a binary distribution between male and female, and country includes five countries (UK, USA, Canada, China, and Australia). Ten categories make up race: African American, Welsh, White, Hispanic, Asian, Korean, Chinese, Australian, mixed, and black. Ages range from 21 to 62, education levels are broken down into four groups (high school, bachelor's, master's, and PhD degrees), and years of experience are 0 to 34, according to descriptive statistics. Salary ranges are expressed in US dollars; the range of salaries is 350--250,000 US dollars, and senior status is binary, meaning that a person is either in a senior position or not. The data set provides a wealth of resources for investigating the connections and trends among the variables, enabling examinations such as multilevel modeling, correlation analysis, and a more comprehensive understanding of the elements impacting salaries around the globe.
+This study examines a large data collection that includes salary information for individuals with a variety of demographic and professional characteristics. The data set includes four categorical factors (gender, job title, nation, and race) and five numeric variables (age, education level, years of experience, salary, and senior status). Notably, job titles cover 129 different occupations, gender displays a binary distribution between male and female, and country includes five countries (UK, USA, Canada, China, and Australia). Ten categories make up race: African American, Welsh, White, Hispanic, Asian, Korean, Chinese, Australian, mixed, and black. Ages range from 21 to 62, education levels are broken down into four groups (high school, bachelor's, master's, and PhD degrees), and years of experience are 0 to 34, according to descriptive statistics. Salary ranges are expressed in US dollars; the range of salaries is 350-250,000 US dollars, and senior status is binary, meaning that a person is either in a senior position or not. The data set provides a wealth of resources for investigating the connections and trends among the variables, enabling examinations such as multilevel modeling, correlation analysis, and a more comprehensive understanding of the elements impacting salaries around the globe.
 
 ```{r}
 #| warning: false
@@ -47,7 +47,13 @@ unique_number<-sapply(salary, function(x) length(unique(x)))
 
 ## Background
 
-I selected salary as my data collection because it can provide insightful information about the variables affecting individual salary outcomes. Additionally, knowing these connections might help decision-makers in organizational settings make well-informed choices. Employers can utilize the model to inform data-driven decisions about workforce planning, talent development, and wage structures. Additionally, the model might point out possible areas for improvement or action, such addressing racial or gender-based differences in salary results. \# Method \## Data Cleaning The initial data set has 6684 rows and 9 columns. Then I found there are duplicate variables so we remove these values. And then check if there is any null value in the data set. Luckily, there is no null value so we will not fail the model because of missing value. So the final data set has 5148 rows and 9 columns
+I selected salary as my data collection method because it can provide insightful information about the variables affecting individual salary outcomes. Additionally, knowing these connections might help decision-makers in organizational settings make well-informed choices. Employers can utilize the model to inform data-driven decisions about workforce planning, talent development, and wage structures. Additionally, the model might point out possible areas for improvement or action, such as addressing racial or gender-based differences in salary results.
+
+# Method 
+
+## Data Cleaning
+
+The initial data set has 6684 rows and 9 columns. Then I found there were duplicate variables, so we removed these values. And then check if there is a null value in the data set. Luckily, there is no null value, so we will not fail the model because of the missing value. So the final data set has 5148 rows and 9 columns.
 
 ```{r}
 #| warning: false
@@ -63,17 +69,17 @@ salary$Race <- as.factor(salary$Race)
 
 ## Exploratory Data Analysis
 
-EDA is generally used to see whether there are correlation between variables and Salary. Boxplot and ANOVA would be working to see if factors are highly correlated for categorical variables. Heatmap and Vif function would be working to see if factors are highly correlated for numerical variables. All factors which are correlated to salary will be counted as a factor in the model. Also, whether there is correlation between these variables are also analyzed to see if there are interactive effects for those variables. 
+EDA is generally used to see whether there is a correlation between variables and salary. Boxplot and ANOVA would be used to see if factors are highly correlated for categorical variables. Heatmap and VIF functions would be working to see if factors are highly correlated for numerical variables. All factors that are correlated to salary will be counted as factors in the model. Also, whether there is a correlation between these variables is also analyzed to see if there are interactive effects for those variables.
 
 ## Multilevel Linear Model 
 
-Two models are being fitted, one contains the interactive effect and the other doesn't. For both models, the assumptions of the multilevel model are checked whether the model fits the requirement. For each multilevel model, the linearity, normality assumption, and homogeneity of variance are being checked using the model. 
+Two models are being fitted; one contains the interactive effect and the other doesn't. For both models, the assumptions of the multilevel model are checked to see if the model fits the requirements. For each multilevel model, the linearity, normality assumption, and homogeneity of variance are being checked using the model.
 
 # Result 
 
 ## Visualization 
 
-### cateforical variables
+### categorical variables
 
 ```{r}
 #| warning: false
@@ -113,10 +119,38 @@ gender_box
 grid.arrange(race_box,country_box,nrow=2)
 ```
 
-
-Figures above show the distribution of the salary given different factors. For gender, we can see there is a clear difference between Male and Female whether in 25% value, median, 75% value, or max value, which shows that gender is an important factor for salary. And for ANOVA analysis, the p-value is small which indicates that there are significant differences in salary across Gender. For Country and Race, it seems like we can not see a significant difference in salary across Country and Race. And in order to check by ANOVA and it gives us a high p-value which proves that there are not significant difference in salary across Country and Race. For job Title, since we have 129 different job titles, so boxplot can not work well here so we just use ANOVA to check the correlation. The p-value is small enough to say that there are significant differences in salary across Job Title. 
+Figures above show the distribution of the salary given different factors. For gender, we can see there is a clear difference between male and female, whether in 25% value, median, 75% value, or max value, which shows that gender is an important factor for salary. And for ANOVA analysis, the p-value is small, which indicates that there are significant differences in salary across genders. For country and race, it seems like we cannot see a significant difference in salary across countries and races. And in order to check by ANOVA, it gives us a high p-value, which proves that there is no significant difference in salary across country and race. For job titles, since we have 129 different job titles, boxplot cannot work well here, so we just use ANOVA to check the correlation. The p-value is small enough to say that there are significant differences in salary across job titles.
 
 ### numerical variables
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+salary_row<-ggplot(salary) +
+  aes(x = Salary) +
+  geom_histogram(bins = 30L, fill = "red",color = "black") +
+  labs(y = "Frequency", title = "Salary Distribution") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+salary_log<-ggplot(salary) +
+  aes(x = log(Salary)) +
+  geom_histogram(bins = 30L, fill = "red",color = "black") +
+  labs(y = "Frequency", title = "Salary Distribution with log") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+grid.arrange(salary_row,salary_log,nrow=2)
+```
+
+First, we look at the most important variable, which is salary. The histogram of the raw salary data suggests a relatively even distribution, indicating that salaries are spread across different ranges without a strong skew. This suggests a more uniform distribution of salaries without a pronounced concentration in a particular salary range.
+
+Since the range for salary is wide, we use a logarithmic transformation. After applying the logarithm transformation to the salary data, the distribution becomes right-skewed. The right skewness indicates that there are relatively more high salary values, and the transformation helps in highlighting differences within the high salary range. 
 
 ```{r}
 #| warning: false
@@ -132,7 +166,8 @@ ggplot(cor_df, aes(x = Var1, y = Var2, fill = Freq)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-Now we are looking the correlation between these numerical variables. We use the heat map to see if there are high correlation between these variables. We find that Age and Years.of.Experience has not only high correlation with each other, but has also high correlation with salary. But Senior is a variable that has a very low correlation with all other variables.
+
+Now we are looking at the correlation between these numerical variables. We use the heat map to see if there is a high correlation between these variables. We find that age and years of Experience has not only a high correlation with each other but also a high correlation with salary. But senior is a variable that has a very low correlation with all other variables.
 
 ```{r}
 #| warning: false
@@ -142,13 +177,13 @@ vif_model <- lm(numeric_variables)
 vif_values <- vif(vif_model)
 ```
 
-Then we are going to check for the collinearity. Years.of.Experience and Age have VIF value which are very high. So we can choose Age and Years.of.Experience as our variables and put an interaction term for these two variables in the model.
+Then we are going to check for collinearity. Years.of. Experience and age have a VIF value that is very high. So we can choose age and years of Experience as our variables and put an interaction term for these two variables in the model.
 
 ## Multilevel Model
 
 ### Without interaction effects
 
-The model includes Age, Year of experience, and the random effects grouped by Gender and Job Title. And we normalize the salary by log(salary).
+The model includes age, year of experience, and random effects grouped by gender and job title. And we normalize the salary by log (salary), as mentioned before.
 
 ```{r, fig.height=4, out.height='50%'}
 #| warning: false
@@ -160,12 +195,11 @@ qqmath(model1)
 ```
 
 
-In these two figures, it show the residual plot and the qq plot which generally confirm the linearity and normality of the model. Although there are some outliers that away from 0, most of the residuals are randomly distributed around 0.
+In these two figures, it shows the residual plot and the qq plot, which generally confirm the linearity and normality of the model. Although there are some outliers that are away from 0, most of the residuals are randomly distributed around 0.
 
 ### Include interaction effects
 
-The model includes Age, Year of experience, the interaction effect between Age and Year of experience, and the random effects grouped by Gender and Job Title.And we normalize the salary by 
-log(salary).
+The model includes age, year of experience, the interaction effect between age and year of experience, and the random effects grouped by gender and job title. And we normalize the salary by log (salary),as mentioned before.
 
 ```{r,fig.height=4, out.height='50%'}
 #| warning: false
@@ -175,23 +209,22 @@ model2 <- lmer(log(Salary) ~Age + Years.of.Experience + Age*Years.of.Experience 
 plot(resid(model2))
 qqmath(model2)
 ```
-In Figure above, the residual plot and the qq plot which generally confirm the linearity and normality of the model.The model helps to improve the homogeneity of variability as the points are more normality distributed in the residual and qq plot.
+
+In the figure above, the residual plot and the qq plot generally confirm the linearity and normality of the model. The model helps to improve the homogeneity of variability as the points are more normally distributed in the residual and qq plots.
 
 # Discussion
 
-There are two models where one contained the interaction term and the other doesn't. The result shows that the homogeneity is being improved while adding the interaction term between age and year of experiences.
+There are two models, where one contains the interaction term and the other doesn't. The result shows that the homogeneity is improving while adding the interaction term between age and year of experience.
 
- For the model, y equals the salary , x are the variables include  Age, Year of experience, the interaction effect between Age and Year of experience, and the random effects grouped by Gender and Job Title. The interaction term is much more statistical significant than other fixed effects.
- 
-The model, using restricted maximum likelihood (REML), effectively explores the relationship between log-transformed Salary and demographic factors like Age, Years of Experience, and their interaction. The model demonstrates robust fit with a convergence criterion of -398.4, and the scaled residuals display symmetrical distribution around zero (-21.0209 to 8.0234). Random effects analysis indicates minimal Salary variability linked to Gender, while Job Title introduces some variance (0.1096). Fixed effects reveal positive impacts of Age and Years of Experience on log(Salary), supported by significant t-values. The interaction term, Age and Years of Experience, underscores a moderating effect.
+For the model, y equals the salary, and x is the variable that includes Age, year of experience, the interaction effect between age and year of experience, and the random effects grouped by gender and job title. The interaction term is much more statistically significant than other fixed effects.The model, using restricted maximum likelihood (REML), effectively explores the relationship between log-transformed salary and demographic factors like age, years of experience, and their interaction. The model demonstrates robust fit with a convergence criterion of -398.4, and the scaled residuals display a symmetrical distribution around zero (-21.0209 to 8.0234). Random effects analysis indicates minimal salary variability linked to gender, while job title introduces some variance (0.1096). Fixed effects reveal positive impacts of age and years of experience on log (salary), supported by significant t-values. The interaction term, age and years of experience, underscores a moderating effect.
 
-However, there are some problems for me with this study. Firstly, I think it would be better to classify 129 job titles into some groups. Like "Manager" would include "Marketing Manager" and "Financial Manger", but I think it would be hard when one job title can fit more than one group, so I tried but given up on it. 
+However, there are some challenges for me with this study. Firstly, I think it would be better to classify 129 job titles into some groups. "Manager" would include "Marketing Manager" and "Financial Manager," but I think it would be hard when one job title can fit more than one group, so I tried but gave up on it.
 
-Secondly, It is surprisingly that in the residual plot, most of the outliers are below 0. I would think that outliers should be equally above and below 0 since there is a saying that "1 percent of population holds 99% money". But there is only 1 outlier above the residual plot. Maybe the reason is people who have salary much high than other people are not in the study, so this study may not represent the population. 
+Secondly, it is surprising that in the residual plot, most of the outliers are below 0. I would think that outliers should be equally above and below 0 since there is a saying that "1 percent of the population holds 99% of the money." But there is only one outlier above the residual plot. Maybe the reason is that people who have salaries much higher than other people are not included in the study, so this study may not represent the population.
 
-Lastly, in the race part, I tried to put "Korean" and "Chinese" into "Asian", but then I found in the country part, there is China. So I think maybe it was not correct to classify "Chinese" into "Asian". 
+Lastly, in the race part, I tried to put "Korean" and "Chinese" into "Asian," but then I found that in the country part, there is China. So I think maybe it was not correct to classify "Chinese" as "Asian."
 
-What's more, the future study can be done to see which factors might affect the salary the most, and a model might be fitted to predict the popularity.
+What's more, a future study can be done to see which factors might affect the salary the most, and a model might be fitted to predict its popularity.
 
 # Appendix
 
@@ -202,12 +235,15 @@ What's more, the future study can be done to see which factors might affect the 
 gender_aov<-aov(Salary~Gender,salary)
 cat("Gender ANOVA:\n")
 print(gender_aov)
+
 race_aov<-aov(Salary~Race,salary)
 cat("\nRace ANOVA:\n")
 print(race_aov)
+
 job_aov<-aov(Salary~Job.Title,salary)
 cat("\nJob ANOVA:\n")
 print(job_aov)
+
 country_aov<-aov(Salary~Country,salary)
 cat("\nCountry ANOVA:\n")
 print(country_aov)
