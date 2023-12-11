@@ -31,8 +31,7 @@ library(gtable)
 ```
 
 # Abstract
-
-This study examines a large data collection that includes salary information for individuals with a variety of demographic and professional characteristics. The data set includes four categorical factors (gender, job title, nation, and race) and five numeric variables (age, education level, years of experience, salary, and senior status). Notably, job titles cover 129 different occupations, gender displays a binary distribution between male and female, and country includes five countries (UK, USA, Canada, China, and Australia). Ten categories make up race: African American, Welsh, White, Hispanic, Asian, Korean, Chinese, Australian, mixed, and black. Ages range from 21 to 62, education levels are broken down into four groups (high school, bachelor's, master's, and PhD degrees), and years of experience are 0 to 34, according to descriptive statistics. Salary ranges are expressed in US dollars; the range of salaries is 350-250,000 US dollars, and senior status is binary, meaning that a person is either in a senior position or not. The data set provides a wealth of resources for investigating the connections and trends among the variables, enabling examinations such as multilevel modeling, correlation analysis, and a more comprehensive understanding of the elements impacting salaries around the globe.
+I selected salary as my data collection method because it can provide insightful information about the variables affecting individual salary outcomes. Additionally, knowing these connections might help decision-makers in organizational settings make well-informed choices. Employers can utilize the model to inform data-driven decisions about workforce planning, talent development, and wage structures. Additionally, the model might point out possible areas for improvement or action, such as addressing racial or gender-based differences in salary results.
 
 ```{r}
 #| warning: false
@@ -45,15 +44,26 @@ unique_number<-sapply(salary, function(x) length(unique(x)))
 
 # Introduction
 
-## Background
+This study examines a large data collection that includes salary information for individuals with a variety of demographic and professional characteristics. The data set includes four categorical factors (gender, job title, nation, and race) and five numeric variables (age, education level, years of experience, salary, and senior status). Notably, job titles cover 129 different occupations, gender displays a binary distribution between male and female, and country includes five countries (UK, USA, Canada, China, and Australia). Ten categories make up race: African American, Welsh, White, Hispanic, Asian, Korean, Chinese, Australian, mixed, and black. Ages range from 21 to 62, education levels are broken down into four groups (high school, bachelor's, master's, and PhD degrees), and years of experience are 0 to 34, according to descriptive statistics. Salary ranges are expressed in US dollars; the range of salaries is 350-250,000 US dollars, and senior status is binary, meaning that a person is either in a senior position or not. The data set provides a wealth of resources for investigating the connections and trends among the variables, enabling examinations such as multilevel modeling, correlation analysis, and a more comprehensive understanding of the elements impacting salaries around the globe.
 
-I selected salary as my data collection method because it can provide insightful information about the variables affecting individual salary outcomes. Additionally, knowing these connections might help decision-makers in organizational settings make well-informed choices. Employers can utilize the model to inform data-driven decisions about workforce planning, talent development, and wage structures. Additionally, the model might point out possible areas for improvement or action, such as addressing racial or gender-based differences in salary results.
+
+| Variable           | Description                            | Data Type | Possible Values |
+|--------------------|----------------------------------------|-----------|-----------------|
+| Gender             | Gender of the employee                  | Categorical | Male, Female   |
+| Job Title          | Job title of the employee               | Categorical | (List of job titles) |
+| Country            | Country of residence                    | Categorical | UK, USA, Canada, China, Australia |
+| Race               | Race or ethnicity of the employee       | Categorical | White, Hispanic, Asian, ... |
+| Age                | Age of the employee                     | Numeric   | 21 to 62        |
+| Education Level    | Education level of the employee         | Categorical | High School, Bachelor, Master, PhD |
+| Years of Experience | Number of years of work experience      | Numeric   | 0 to 34         |
+| Salary             | Salary of the employee (in USD)         | Numeric   | 350 to 250000   |
+| Senior             | Binary variable indicating senior position | Binary  | 0 (No), 1 (Yes) |
 
 # Method 
 
 ## Data Cleaning
 
-The initial data set has 6684 rows and 9 columns. Then I found there were duplicate variables, so we removed these values. And then check if there is a null value in the data set. Luckily, there is no null value, so we will not fail the model because of the missing value. So the final data set has 5148 rows and 9 columns.
+The original dataset has 6684 rows and 9 columns. The dataset was improved after identifying and deleting duplicate values, an essential step to preserve data integrity, resulting in a final dataset of 5148 rows and 9 columns. A subsequent check for null values revealed that there were no missing data points. This fortunate condition eliminates concerns about model failure owing to missing variables, resulting in a clean and complete dataset for future analysis and modeling efforts. The thorough data pretreatment, which includes duplicate removal and null value verification, adds to overall data quality and lays the groundwork for robust and trustworthy modeling results.
 
 ```{r}
 #| warning: false
@@ -69,11 +79,11 @@ salary$Race <- as.factor(salary$Race)
 
 ## Exploratory Data Analysis
 
-EDA is generally used to see whether there is a correlation between variables and salary. Boxplot and ANOVA would be used to see if factors are highly correlated for categorical variables. Heatmap and VIF functions would be working to see if factors are highly correlated for numerical variables. All factors that are correlated to salary will be counted as factors in the model. Also, whether there is a correlation between these variables is also analyzed to see if there are interactive effects for those variables.
+Exploratory Data Analysis (EDA) serves as a crucial preliminary step in understanding the relationships within a dataset, particularly in the context of examining potential correlations with the variable of interest, which in this case is salary. To discern the influence of categorical variables, boxplots and analysis of variance (ANOVA) are employed. The boxplots provide visual insights into the distribution of salary across different categories, while ANOVA tests the statistical significance of variations among groups. Meanwhile, for numerical variables, a heatmap and variance inflation factor (VIF) analysis are conducted to gauge the degree of correlation among factors. The heatmap visually represents the strength and direction of correlations, while VIF quantifies the extent of multicollinearity. Variables exhibiting correlations with salary are identified and considered as potential factors in the subsequent modeling process. Furthermore, interactive effects among these variables are scrutinized to discern any nuanced relationships that might impact salary outcomes. This comprehensive analytical approach ensures a thorough exploration of both categorical and numerical factors, paving the way for a robust and informed modeling strategy.
 
 ## Multilevel Linear Model 
 
-Two models are being fitted; one contains the interactive effect and the other doesn't. For both models, the assumptions of the multilevel model are checked to see if the model fits the requirements. For each multilevel model, the linearity, normality assumption, and homogeneity of variance are being checked using the model.
+There are two distinct models under consideration: one that includes the interaction term and one that does not. The reasoning behind fitting both models is to investigate the term of the interaction effect on the outcomes. To ensure the validity and dependability of the multilevel models, their assumptions are thoroughly examined. This entails a thorough analysis of essential assumptions, such as linearity, normality, and variance homogeneity. In both cases, the goal is to examine whether the data meets the key requirements for multilevel modeling. We hope to determine the suitability of the models and get insight into potential deviations from the underlying assumptions that could affect the trustworthiness of the outcomes through this thorough review.
 
 # Result 
 
@@ -232,25 +242,62 @@ What's more, a future study can be done to see which factors might affect the sa
 #| warning: false
 #| message: false
 #| echo: false
+cat("Summary Statistics:\n")
+print(summary)
+
+cat("\nNumber of Unique Values:\n")
+print(unique_number)
+
+cat("\nCount of Missing Values:\n")
+print(if_na)
+
 gender_aov<-aov(Salary~Gender,salary)
 cat("Gender ANOVA:\n")
-print(gender_aov)
+print(summary(gender_aov))
 
 race_aov<-aov(Salary~Race,salary)
 cat("\nRace ANOVA:\n")
-print(race_aov)
+print(summary(race_aov))
 
 job_aov<-aov(Salary~Job.Title,salary)
 cat("\nJob ANOVA:\n")
-print(job_aov)
+print(summary(job_aov))
 
 country_aov<-aov(Salary~Country,salary)
 cat("\nCountry ANOVA:\n")
-print(country_aov)
+print(summary(country_aov))
+
+cat("\n VIF_values with Salary:\n")
+print(vif_values)
 
 cat("\nModel 1 Summary:\n")
 print(summary(model1))
 
 cat("\nModel 2 Summary:\n")
 print(summary(model2))
+
+Age<-ggplot(salary) +
+  aes(x = Age) +
+  geom_histogram(bins = 30L, fill = "red",color = "black") +
+  labs(y = "Frequency", title = "Age Distribution") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+year<-ggplot(salary) +
+  aes(x = Years.of.Experience) +
+  geom_histogram(bins = 30L, fill = "purple",color = "black") +
+  labs(y = "Frequency", title = "Years of experience Distribution") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+grid.arrange(Age,year,nrow=2)
+
+ggplot(salary) +
+  aes(x = Years.of.Experience, y = Age) +
+  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_smooth(method=lm,span = 0.75) +
+  labs(title = "Scatterplot for Age and Year of experience") +
+  theme_minimal()+
+    theme(plot.title = element_text(hjust = 0.5))
+
 ```
